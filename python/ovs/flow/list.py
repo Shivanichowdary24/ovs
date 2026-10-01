@@ -68,7 +68,7 @@ class ListParser(object):
         self._string = string
         self._decoders = decoders or ListDecoders()
         self._keyval = list()
-        self._regexp = r"({})".format("|".join(delims))
+        self._regexp = r"({})".format("|".join(map(re.escape, delims)))
 
     def kv(self):
         return self._keyval
@@ -87,6 +87,7 @@ class ListParser(object):
         while kpos < len(self._string) and self._string[kpos] != "\n":
             split_parts = re.split(self._regexp, self._string[kpos:], 1)
             value_str = split_parts[0]
+            delimiter = split_parts[1] if len(split_parts) > 1 else ""
 
             key, value = self._decoders.decode(index, value_str)
 
@@ -98,7 +99,7 @@ class ListParser(object):
             )
             self._keyval.append(KeyValue(key, value, meta))
 
-            kpos += len(value_str) + 1
+            kpos += len(value_str) + len(delimiter)
             index += 1
 
 

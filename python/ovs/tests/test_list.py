@@ -64,3 +64,23 @@ def test_kv_parser(input_data, expected):
         assert input_string[kpos : kpos + len(kstr)] == kstr
         if vpos != -1:
             assert input_string[vpos : vpos + len(vstr)] == vstr
+
+
+def test_list_parser_literal_regex_delimiter():
+    parser = ListParser("field1.field2.field3", delims=["."])
+    parser.parse()
+
+    result = parser.kv()
+
+    assert [kv.value for kv in result] == ["field1", "field2", "field3"]
+    assert [kv.meta.kpos for kv in result] == [0, 7, 14]
+
+
+def test_list_parser_multichar_delimiter():
+    parser = ListParser("field1||field2||field3", delims=["||"])
+    parser.parse()
+
+    result = parser.kv()
+
+    assert [kv.value for kv in result] == ["field1", "field2", "field3"]
+    assert [kv.meta.kpos for kv in result] == [0, 8, 16]

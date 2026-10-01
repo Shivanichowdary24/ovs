@@ -128,3 +128,15 @@ from ovs.flow.decoders import decode_ip_port_range
 )
 def test_decode_ip_port_range(input_string, expected):
     assert expected == decode_ip_port_range(input_string)
+
+@pytest.mark.parametrize(
+    "input_string",
+    [
+        "192.168.1.10:80garbage",
+        "192.168.1.10:80-90garbage",
+        "[fe80::1]:80garbage",
+    ],
+)
+def test_decode_ip_port_range_rejects_trailing_garbage(input_string):
+    with pytest.raises(ValueError):
+        decode_ip_port_range(input_string)

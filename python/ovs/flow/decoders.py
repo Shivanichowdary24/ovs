@@ -462,9 +462,12 @@ def decode_ip_port_range(value):
         (the "ports" key might be omitted)
     """
     if value.count(":") > 1:
-        match = ipv6_port_regex.match(value)
+        match = ipv6_port_regex.fullmatch(value)
     else:
-        match = ipv4_port_regex.match(value)
+        match = ipv4_port_regex.fullmatch(value)
+
+    if not match:
+        raise ValueError("Invalid IP address and port range: %s" % value)
 
     ip_start = match.group(1)
     ip_end = match.group(2)

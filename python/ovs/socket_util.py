@@ -82,6 +82,7 @@ def make_unix_socket(style, nonblock, bind_path, connect_path, short=False):
                 os.unlink(bind_path)
             except OSError as e:
                 if e.errno != errno.ENOENT:
+                    sock.close()
                     return e.errno, None
 
             ovs.fatal_signal.add_file_to_unlink(bind_path)
@@ -128,6 +129,8 @@ def make_unix_socket(style, nonblock, bind_path, connect_path, short=False):
                 try:
                     bind_dirfd = os.open(dirname, os.O_DIRECTORY | os.O_RDONLY)
                 except OSError as err:
+                    if connect_dirfd is not None:
+                        os.close(connect_dirfd)
                     return get_exception_errno(err), None
                 short_bind_path = "/proc/self/fd/%d/%s" % (bind_dirfd,
                                                            basename)

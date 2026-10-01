@@ -323,7 +323,7 @@ def write_fully(fd, buf):
                 return errno.EPROTO, bytes_written
             else:
                 bytes_written += retval
-                buf = buf[:retval]
+                buf = buf[retval:]
         except OSError as e:
             return e.errno, bytes_written
 
